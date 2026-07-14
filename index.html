@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Lessgooo - Learn & Drive Forward</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg-dark: #0a0c14;
+      --bg-card: #111520;
+      --bg-surface: #161b2e;
+      --accent-green: #00f5a0;
+      --accent-orange: #ff6b2b;
+      --accent-blue: #3d8bff;
+      --accent-purple: #a855f7;
+      --text-primary: #f0f4ff;
+      --text-muted: #8892a4;
+      --border: rgba(255,255,255,0.08);
+      --glow-green: 0 0 30px rgba(0,245,160,0.3);
+      --glow-orange: 0 0 30px rgba(255,107,43,0.3);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.4;
+    }
+
+    /* ─── PAGES ─── */
+    .page {
+      display: none;
+      min-height: 100vh;
+      animation: fadeSlideIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .page.active { display: flex; flex-direction: column; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── NAVBAR ─── */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 2.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,12,20,0.95);
+      backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 3px;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      cursor: pointer;
+    }
+
+    .nav-links { display: flex; gap: 1rem; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.6rem;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: none;
+      text-decoration: none;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--accent-green);
+      color: var(--accent-green);
+    }
+    .btn-outline:hover {
+      background: var(--accent-green);
+      color: var(--bg-dark);
+      box-shadow: var(--glow-green);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-green), #00c878);
+      color: var(--bg-dark);
+      border: none;
+    }
+    .btn-primary:hover {
+      box-shadow: var(--glow-green);
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+
+    .btn-orange {
+      background: linear-gradient(135deg, var(--accent-orange), #e8541e);
+      color: #fff;
+      border: none;
+    }
+    .btn-orange:hover {
+      box-shadow: var(--glow-orange);
+      transform: translateY(-2px);
+      filter: brightness(1.1);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover {
+      border-color: var(--text-muted);
+      color: var(--text-primary);
+    }
+
+    .btn-lg { padding: 0.9rem 2.4rem; font-size: 1rem; border-radius: 8px; }
+    .btn-full { width: 100%; }
+
+    /* ─── HOME PAGE ─── */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 2rem;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    /* Animated background blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: blobFloat 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .blob-1 { width: 500px; height: 500px; background: var(--accent-green); top: -100px; left: -150px; animation-delay: 0s; }
+    .blob-2 { width: 400px; height: 400px; background: var(--accent-blue); bottom: -100px; right: -100px; animation-delay: 3s; }
+    .blob-3 { width: 300px; height: 300px; background: var(--accent-orange); top: 40%; left: 50%; animation-delay: 5s; }
+
+    @keyframes blobFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .hero-badge {
+      display: inline-block;
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      background: rgba(0,245,160,0.1);
+      border: 1px solid rgba(0,245,160,0.25);
+      color: var(--accent-green);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 10vw, 8rem);
+      letter-spacing: 6px;
+      line-height: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title span.highlight {
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-title span.highlight-orange {
+      background: linear-gradient(135deg, var(--accent-orange), #ffb347);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.8;
+      margin-bottom: 3rem;
+      font-weight: 400;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 5rem;
+    }
+
+    /* ─── COURSE CARDS ─── */
+    .courses-section {
+      padding: 4rem 2rem 5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent-green);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      letter-spacing: 3px;
+      margin-bottom: 3rem;
+      color: var(--text-primary);
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .course-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem 1.6rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .course-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      transition: opacity 0.3s;
+      opacity: 0;
+    }
+
+    .course-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255,255,255,0.15);
+      background: var(--bg-surface);
+    }
+
+    .course-card:hover::before { opacity: 1; }
+
+    .card-ict::before   { background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
+    .card-lang::before  { background: linear-gradient(90deg, var(--accent-green), #00c878); }
+    .card-comp::before  { background: linear-gradient(90deg, var(--accent-orange), #ffb347); }
+    .card-drive::before { background: linear-gradient(90deg, #ff4d6d, #ff6b2b); }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+      font-size: 1.4rem;
+    }
+
+    .icon-ict   { background: rgba(61,139,255,0.15); }
+    .icon-lang  { background: rgba(0,245,160,0.15); }
+    .icon-comp  { background: rgba(255,107,43,0.15); }
+    .icon-drive { background: rgba(255,77,109,0.15); }
+
+    .card-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+    }
+
+    .card-desc {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .tag-blue   { background: rgba(61,139,255,0.15);  color: var(--accent-blue); }
+    .tag-green  { background: rgba(0,245,160,0.15);   color: var(--accent-green); }
+    .tag-orange { background: rgba(255,107,43,0.15);  color: var(--accent-orange); }
+    .tag-red    { background: rgba(255,77,109,0.15);  color: #ff4d6d; }
+
+    /* ─── STATS BAR ─── */
+    .stats-bar {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 0.2rem; }
+
+    /* ─── AUTH PAGES ─── */
+    .auth-container {
+      flex: 1;
+      display: flex;
+      align-items: stretch;
+      min-height: 100vh;
+    }
+
+    .auth-left {
+      flex: 1;
+      background: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 30% 50%, rgba(0,245,160,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-left-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.5rem;
+      letter-spacing: 4px;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+
+    .auth-left-desc {
+      color: var(--text-muted);
+      line-height: 1.8;
+      max-width: 360px;
+      font-size: 0.9rem;
+    }
+
+    .auth-feature-list {
+      list-style: none;
+      margin-top: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .auth-feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .feature-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      flex-shrink: 0;
+      box-shadow: 0 0 10px var(--accent-green);
+    }
+
+    .auth-right {
+      width: 480px;
+      max-width: 100%;
+      background: var(--bg-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3.5rem 3rem;
+      border-left: 1px solid var(--border);
+    }
+
+    .auth-form-header { margin-bottom: 2.5rem; }
+
+    .auth-form-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: 3px;
+      margin-bottom: 0.5rem;
+    }
+
+    .auth-form-sub {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .auth-form-sub a {
+      color: var(--accent-green);
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+
+    .auth-form-sub a:hover { opacity: 0.8; text-decoration: underline; }
+
+    /* ─── FORM ELEMENTS ─── */
+    .form-group { margin-bottom: 1.25rem; }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      font-family: 'Space Mono', monospace;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      transition: all 0.25s ease;
+      outline: none;
+      appearance: none;
+    }
+
+    .form-input::placeholder { color: rgba(136,146,164,0.5); }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--accent-green);
+      background: rgba(0,245,160,0.04);
+      box-shadow: 0 0 0 3px rgba(0,245,160,0.1);
+    }
+
+    .form-input.error { border-color: #ff4d6d; }
+    .form-input.error:focus { box-shadow: 0 0 0 3px rgba(255,77,109,0.15); }
+
+    .form-select option { background: var(--bg-surface); }
+
+    .form-error {
+      font-size: 0.75rem;
+      color: #ff4d6d;
+      margin-top: 0.35rem;
+      display: none;
+    }
+
+    .form-error.show { display: block; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .checkbox-wrap {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .checkbox-wrap input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      margin-top: 2px;
+      accent-color: var(--accent-green);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .checkbox-wrap label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .checkbox-wrap label a {
+      color: var(--accent-green);
+      text-decoration: none;
+    }
+
+    .password-wrap { position: relative; }
+    .password-toggle {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      font-size: 0.8rem;
+      transition: color 0.2s;
+      font-family: 'Space Mono', monospace;
+    }
+    .password-toggle:hover { color: var(--text-primary); }
+
+    .password-strength {
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .strength-bar {
+      flex: 1;
+      height: 3px;
+      border-radius: 3px;
+      background: var(--border);
+      transition: background 0.3s;
+    }
+
+    .strength-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+      min-width: 50px;
+      text-align: right;
+    }
+
+    /* ─── SUCCESS PAGE ─── */
+    .success-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .success-icon {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: rgba(0,245,160,0.1);
+      border: 2px solid var(--accent-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem;
+      box-shadow: var(--glow-green);
+      animation: successPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes successPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(0,245,160,0.3); }
+      50% { box-shadow: 0 0 50px rgba(0,245,160,0.6); }
+    }
+
+    .success-icon svg { width: 48px; height: 48px; }
+
+    .success-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 4px;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .success-sub {
+      color: var(--text-muted);
+      max-width: 400px;
+      line-height: 1.8;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ─── DASHBOARD ─── */
+    .dashboard-main {
+      flex: 1;
+      padding: 2.5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .welcome-banner {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .welcome-banner::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent-green), var(--accent-blue), var(--accent-orange));
+    }
+
+    .welcome-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      letter-spacing: 3px;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-sub { color: var(--text-muted); font-size: 0.9rem; }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .dash-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .dash-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
+    .dash-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-bar-wrap {
+      background: var(--border);
+      border-radius: 4px;
+      height: 6px;
+      overflow: hidden;
+      margin-top: 0.75rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+    }
+
+    .dash-percent {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    /* ─── FOOTER ─── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-copy {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+    }
+
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--accent-green); }
+
+    /* ─── TOAST ─── */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      z-index: 9998;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+      pointer-events: none;
+      max-width: 340px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .toast-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .toast-success .toast-dot { background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); }
+    .toast-error .toast-dot   { background: #ff4d6d; box-shadow: 0 0 8px #ff4d6d; }
+
+    /* ─── LOADING SPINNER ─── */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: var(--bg-dark);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .btn.loading .btn-text { display: none; }
+    .btn.loading .spinner  { display: inline-block; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .auth-left { display: none; }
+      .auth-right { width: 100%; padding: 2.5rem 1.5rem; border: none; }
+      .form-row { grid-template-columns: 1fr; }
+      .navbar { padding: 1rem 1.25rem; }
+      .nav-links .btn-ghost { display: none; }
+      .stats-bar { gap: 2rem; }
+      .dashboard-main { padding: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════ PAGE: HOME ══════════════════════ -->
+<div id="page-home" class="page active">
+  <nav class="navbar">
+    <div class="nav-logo" onclick="navigate('home')">LESSGOOO</div>
+    <div class="nav-links">
+      <button class="btn btn-ghost" onclick="navigate('login')">Sign In</button>
+      <button class="btn btn-primary" onclick="navigate('register')">Get Started</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <span class="hero-badge">The Future of Learning</span>
+
+    <h1 class="hero-title">
+      <span class="highlight">LEARN.</span><br/>
+      <span>GROW.</span><br/>
+      <span class="highlight-orange">LESSGOOO!</span>
+    </h1>
+
+    <p class="hero-sub">
+      Master ICT, explore new languages, become computer-savvy, and get certified in lorry driving - all in one platform built for ambitious students.
+    </p>
+
+    <div class="hero-cta">
+      <button class="btn btn-primary btn-lg" onclick="navigate('register')">
+        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        Start Learning Free
+      </button>
+      <button class="btn btn-outline btn-lg" onclick="navigate('login')">Sign In to Account</button>
+    </div>
+
+    <div class="courses-section">
+      <p class="section-label">What We Offer</p>
+      <h2 class="section-title">EXPLORE COURSES</h2>
+      <div class="courses-grid">
+        <div class="course-card card-ict" onclick="navigate('register')">
+          <div class="card-icon icon-ict">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#3d8bff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div class="card-title">Information & Communications Technology</div>
+          <p class="card-desc">Networking, cybersecurity, data systems, and modern IT fundamentals for beginners and pros.</p>
+          <span class="card-tag tag-blue">ICT</span>
+        </div>
+        <div class="course-card card-lang" onclick="navigate('register')">
+          <div class="card-icon icon-lang">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#00f5a0" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+          </div>
+          <div class="card-title">Languages & Communication</div>
+          <p class="card-desc">English, French, Spanish, and professional communication skills for the global stage.</p>
+          <span class="card-tag tag-green">Languages</span>
+        </div>
+        <div class="course-card card-comp" onclick="navigate('register')">
+          <div class="card-icon icon-comp">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#ff6b2b" stroke-width="2"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M2 20h20M8 16v4M16 16v4"/></svg>
+          </div>
+          <div class="card-title">Computer Skills & Digital Literacy</div>
+          <p class="card-desc">From typing basics to spreadsheets, presentations and internet safety for complete beginners.</p>
+          <span class="card-tag tag-orange">Computers</span>
+        </div>
+        <div class="course-card card-drive" onclick="navigate('register')">
+          <div class="card-icon icon-drive">
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#ff4d6d" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+          </div>
+          <div class="card-title">Lorry Driving Training & Certification</div>
+          <p class="card-desc">HGV theory, practical sessions, and license prep - become a professional heavy goods driver.</p>
+          <span class="card-tag tag-red">Driving</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-num">12K+</div><div class="stat-label">Active Students</div></div>
+    <div class="stat-item"><div class="stat-num">48</div><div class="stat-label">Expert Courses</div></div>
+    <div class="stat-item"><div class="stat-num">96%</div><div class="stat-label">Pass Rate</div></div>
+    <div class="stat-item"><div class="stat-num">4.9</div><div class="stat-label">Avg. Rating</div></div>
+  </div>
+
+  <footer class="footer">
+    <span class="footer-copy">2025 Lessgooo. All rights reserved.</span>
+    <div class="footer-links">
+      <a>Privacy Policy</a>
+      <a>Terms of Service</a>
+      <a>Contact Us</a>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════ PAGE: LOGIN ══════════════════════ -->
+<div id="page-login" class="page">
+  <nav class="navbar">
+    <div class="nav-logo" onclick="navigate('home')">LESSGOOO</div>
+    <div class="nav-links">
+      <button class="btn btn-ghost" onclick="navigate('home')">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Back to Home
+      </button>
+    </div>
+  </nav>
+
+  <div class="auth-container">
+    <div class="auth-left">
+      <div class="hero-badge" style="margin-bottom:1.5rem;">Welcome Back</div>
+      <h2 class="auth-left-title">PICK UP<br/>WHERE YOU<br/><span style="background: linear-gradient(135deg, var(--accent-green), var(--accent-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">LEFT OFF</span></h2>
+      <p class="auth-left-desc">Your courses, progress, and achievements are all waiting for you. Sign in to continue your learning journey.</p>
+      <ul class="auth-feature-list">
+        <li><span class="feature-dot"></span>Continue from where you stopped</li>
+        <li><span class="feature-dot"></span>Track your course progress live</li>
+        <li><span class="feature-dot"></span>Access certificates and badges</li>
+        <li><span class="feature-dot"></span>Chat with instructors anytime</li>
+      </ul>
+    </div>
+
+    <div class="auth-right">
+      <div class="auth-form-header">
+        <h2 class="auth-form-title">SIGN IN</h2>
+        <p class="auth-form-sub">
+          No account yet? <a onclick="navigate('register')">Create one free &rarr;</a>
+        </p>
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="login-email">Email Address</label>
+          <input class="form-input" type="email" id="login-email" placeholder="you@example.com" autocomplete="email"/>
+          <span class="form-error" id="login-email-err">Please enter a valid email address.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <div class="password-wrap">
+            <input class="form-input" type="password" id="login-password" placeholder="Enter your password" autocomplete="current-password" style="padding-right:4.5rem;"/>
+            <button type="button" class="password-toggle" onclick="togglePassword('login-password', this)">SHOW</button>
+          </div>
+          <span class="form-error" id="login-pass-err">Password must be at least 6 characters.</span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.8rem; color:var(--text-muted); cursor:pointer;">
+            <input type="checkbox" style="accent-color:var(--accent-green);"/> Remember me
+          </label>
+          <a style="font-size:0.8rem; color:var(--accent-green); cursor:pointer; text-decoration:none;" onclick="showToast('Password reset link sent to your email!', 'success')">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full btn-lg" id="login-btn">
+          <span class="btn-text">Sign In to Lessgooo</span>
+          <div class="spinner"></div>
+        </button>
+
+        <div class="divider">or sign in with</div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+          <button type="button" class="btn btn-ghost" onclick="showToast('Google sign-in coming soon!', 'success')">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+            Google
+          </button>
+          <button type="button" class="btn btn-ghost" onclick="showToast('Facebook sign-in coming soon!', 'success')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#1877f2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            Facebook
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════ PAGE: REGISTER ══════════════════════ -->
+<div id="page-register" class="page">
+  <nav class="navbar">
+    <div class="nav-logo" onclick="navigate('home')">LESSGOOO</div>
+    <div class="nav-links">
+      <button class="btn btn-ghost" onclick="navigate('home')">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+        Back to Home
+      </button>
+    </div>
+  </nav>
+
+  <div class="auth-container">
+    <div class="auth-left" style="background: linear-gradient(135deg, var(--bg-surface), #1a1f35);">
+      <div class="hero-badge" style="margin-bottom:1.5rem; border-color:rgba(255,107,43,0.3); background:rgba(255,107,43,0.1); color:var(--accent-orange);">New Student</div>
+      <h2 class="auth-left-title">JOIN THE<br/>LESSGOOO<br/><span style="background: linear-gradient(135deg, var(--accent-orange), #ffb347); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">COMMUNITY</span></h2>
+      <p class="auth-left-desc">Create your free account today and access all 4 learning tracks. Thousands of students are already on their journey.</p>
+      <ul class="auth-feature-list">
+        <li><span class="feature-dot" style="background:var(--accent-orange);box-shadow:0 0 10px var(--accent-orange);"></span>Free account with full course access</li>
+        <li><span class="feature-dot" style="background:var(--accent-orange);box-shadow:0 0 10px var(--accent-orange);"></span>Personalized learning roadmap</li>
+        <li><span class="feature-dot" style="background:var(--accent-orange);box-shadow:0 0 10px var(--accent-orange);"></span>Official certificates on completion</li>
+        <li><span class="feature-dot" style="background:var(--accent-orange);box-shadow:0 0 10px var(--accent-orange);"></span>Live sessions with expert tutors</li>
+      </ul>
+    </div>
+
+    <div class="auth-right" style="overflow-y:auto; max-height:calc(100vh - 70px);">
+      <div class="auth-form-header">
+        <h2 class="auth-form-title">CREATE ACCOUNT</h2>
+        <p class="auth-form-sub">
+          Already have an account? <a onclick="navigate('login')">Sign in &rarr;</a>
+        </p>
+      </div>
+
+      <form id="register-form" onsubmit="handleRegister(event)" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="reg-fname">First Name</label>
+            <input class="form-input" type="text" id="reg-fname" placeholder="John"/>
+            <span class="form-error" id="reg-fname-err">First name is required.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="reg-lname">Last Name</label>
+            <input class="form-input" type="text" id="reg-lname" placeholder="Doe"/>
+            <span class="form-error" id="reg-lname-err">Last name is required.</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-email">Email Address</label>
+          <input class="form-input" type="email" id="reg-email" placeholder="you@example.com" autocomplete="email"/>
+          <span class="form-error" id="reg-email-err">Please enter a valid email address.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-phone">Phone Number</label>
+          <input class="form-input" type="tel" id="reg-phone" placeholder="+44 7700 900000"/>
+          <span class="form-error" id="reg-phone-err">Please enter a valid phone number.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-course">Interested Course Track</label>
+          <select class="form-select" id="reg-course">
+            <option value="">-- Select a course track --</option>
+            <option value="ict">Information & Communications Technology (ICT)</option>
+            <option value="languages">Languages & Communication</option>
+            <option value="computers">Computer Skills & Digital Literacy</option>
+            <option value="driving">Lorry Driving Training & Certification</option>
+            <option value="all">All Tracks (Full Access)</option>
+          </select>
+          <span class="form-error" id="reg-course-err">Please select a course track.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-password">Password</label>
+          <div class="password-wrap">
+            <input class="form-input" type="password" id="reg-password" placeholder="Create a strong password" autocomplete="new-password" style="padding-right:4.5rem;" oninput="updateStrength(this.value)"/>
+            <button type="button" class="password-toggle" onclick="togglePassword('reg-password', this)">SHOW</button>
+          </div>
+          <div class="password-strength" id="strength-wrap">
+            <div class="strength-bar" id="s1"></div>
+            <div class="strength-bar" id="s2"></div>
+            <div class="strength-bar" id="s3"></div>
+            <div class="strength-bar" id="s4"></div>
+            <span class="strength-label" id="s-label"></span>
+          </div>
+          <span class="form-error" id="reg-pass-err">Password must be at least 8 characters.</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="reg-confirm">Confirm Password</label>
+          <div class="password-wrap">
+            <input class="form-input" type="password" id="reg-confirm" placeholder="Repeat your password" autocomplete="new-password" style="padding-right:4.5rem;"/>
+            <button type="button" class="password-toggle" onclick="togglePassword('reg-confirm', this)">SHOW</button>
+          </div>
+          <span class="form-error" id="reg-confirm-err">Passwords do not match.</span>
+        </div>
+
+        <div class="checkbox-wrap">
+          <input type="checkbox" id="reg-terms"/>
+          <label for="reg-terms">I agree to the <a>Terms of Service</a> and <a>Privacy Policy</a> of Lessgooo. I understand my data will be used to personalize my learning experience.</label>
+        </div>
+        <span class="form-error" id="reg-terms-err" style="margin-top:-0.75rem; margin-bottom:1rem;">You must accept the terms to continue.</span>
+
+        <button type="submit" class="btn btn-orange btn-full btn-lg" id="register-btn">
+          <span class="btn-text">Create My Account</span>
+          <div class="spinner" style="border-top-color:#fff;"></div>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════ PAGE: DASHBOARD ══════════════════════ -->
+<div id="page-dashboard" class="page">
+  <nav class="navbar">
+    <div class="nav-logo" onclick="navigate('home')">LESSGOOO</div>
+    <div class="nav-links">
+      <span id="nav-user-name" style="font-size:0.85rem; color:var(--text-muted); font-family:'Space Mono',monospace;"></span>
+      <button class="btn btn-ghost" onclick="handleLogout()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="dashboard-main">
+    <div class="welcome-banner">
+      <h2 class="welcome-title" id="dash-welcome">WELCOME BACK!</h2>
+      <p class="welcome-sub">Here's your learning overview. Let's keep the momentum going!</p>
+    </div>
+
+    <p class="section-label" style="margin-bottom:1rem;">Your Enrolled Courses</p>
+    <div class="dashboard-grid">
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-icon icon-ict">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#3d8bff" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <span class="card-tag tag-blue">ICT</span>
+        </div>
+        <div class="card-title" style="font-size:0.95rem;">Information & Communications Technology</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:35%; background:linear-gradient(90deg, var(--accent-blue), var(--accent-purple));"></div>
+        </div>
+        <div class="dash-percent">35% complete &mdash; 7 of 20 lessons</div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-icon icon-lang">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#00f5a0" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"/></svg>
+          </div>
+          <span class="card-tag tag-green">Languages</span>
+        </div>
+        <div class="card-title" style="font-size:0.95rem;">Languages & Communication</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:68%; background:linear-gradient(90deg, var(--accent-green), #00c878);"></div>
+        </div>
+        <div class="dash-percent">68% complete &mdash; 14 of 20 lessons</div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-icon icon-comp">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#ff6b2b" stroke-width="2"><rect x="4" y="4" width="16" height="12" rx="2"/><path d="M2 20h20M8 16v4M16 16v4"/></svg>
+          </div>
+          <span class="card-tag tag-orange">Computers</span>
+        </div>
+        <div class="card-title" style="font-size:0.95rem;">Computer Skills & Digital Literacy</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:10%; background:linear-gradient(90deg, var(--accent-orange), #ffb347);"></div>
+        </div>
+        <div class="dash-percent">10% complete &mdash; 2 of 20 lessons</div>
+      </div>
+
+      <div class="dash-card">
+        <div class="dash-card-header">
+          <div class="dash-card-icon icon-drive">
+            <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="#ff4d6d" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+          </div>
+          <span class="card-tag tag-red">Driving</span>
+        </div>
+        <div class="card-title" style="font-size:0.95rem;">Lorry Driving Training & Certification</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:55%; background:linear-gradient(90deg, #ff4d6d, #ff6b2b);"></div>
+        </div>
+        <div class="dash-percent">55% complete &mdash; 11 of 20 lessons</div>
+      </div>
+    </div>
+
+    <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap;">
+      <button class="btn btn-primary btn-lg" onclick="showToast('Opening your last course...', 'success')">Continue Learning</button>
+      <button class="btn btn-ghost btn-lg" onclick="navigate('home')">Browse More Courses</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span class="footer-copy">2025 Lessgooo. All rights reserved.</span>
+    <div class="footer-links">
+      <a>Privacy Policy</a>
+      <a>Help & Support</a>
+    </div>
+  </footer>
+</div>
+
+
+<!-- ══════════════════════ TOAST ══════════════════════ -->
+<div class="toast toast-success" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toast-msg">Notification message here.</span>
+</div>
+
+
+<script>
+  // ─── NAVIGATION ───────────────────────────────────────────────
+  function navigate(page) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById('page-' + page);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  // ─── TOAST ────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('toast');
+    const msgEl = document.getElementById('toast-msg');
+    toast.className = 'toast toast-' + type;
+    msgEl.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+  }
+
+  // ─── PASSWORD TOGGLE ──────────────────────────────────────────
+  function togglePassword(id, btn) {
+    const input = document.getElementById(id);
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = 'HIDE';
+    } else {
+      input.type = 'password';
+      btn.textContent = 'SHOW';
+    }
+  }
+
+  // ─── PASSWORD STRENGTH ────────────────────────────────────────
+  function updateStrength(val) {
+    const bars = [document.getElementById('s1'), document.getElementById('s2'), document.getElementById('s3'), document.getElementById('s4')];
+    const label = document.getElementById('s-label');
+    let score = 0;
+    if (val.length >= 8) score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const colors = ['#ff4d6d', '#ff6b2b', '#ffb347', '#00f5a0'];
+    const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+    bars.forEach((b, i) => {
+      b.style.background = i < score ? colors[score - 1] : 'var(--border)';
+    });
+
+    label.textContent = val.length > 0 ? labels[score - 1] || '' : '';
+    label.style.color = score > 0 ? colors[score - 1] : 'var(--text-muted)';
+  }
+
+  // ─── FORM VALIDATION HELPERS ──────────────────────────────────
+  function showError(id, show) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('show', show);
+  }
+
+  function markError(inputId, errId, condition) {
+    const input = document.getElementById(inputId);
+    if (input) input.classList.toggle('error', condition);
+    showError(errId, condition);
+    return condition;
+  }
+
+  // ─── FAKE LOADING ─────────────────────────────────────────────
+  function setLoading(btnId, state) {
+    const btn = document.getElementById(btnId);
+    if (btn) btn.classList.toggle('loading', state);
+    btn.disabled = state;
+  }
+
+  // ─── LOGIN HANDLER ────────────────────────────────────────────
+  function handleLogin(e) {
+    e.preventDefault();
+    const email    = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+
+    let hasError = false;
+    if (markError('login-email', 'login-email-err', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) hasError = true;
+    if (markError('login-password', 'login-pass-err', password.length < 6)) hasError = true;
+
+    if (hasError) return;
+
+    setLoading('login-btn', true);
+
+    setTimeout(() => {
+      setLoading('login-btn', false);
+      const name = email.split('@')[0];
+      document.getElementById('nav-user-name').textContent = name;
+      document.getElementById('dash-welcome').textContent = 'WELCOME BACK, ' + name.toUpperCase() + '!';
+      navigate('dashboard');
+      showToast('Signed in successfully! Welcome back.', 'success');
+    }, 1600);
+  }
+
+  // ─── REGISTER HANDLER ────────────────────────────────────────
+  function handleRegister(e) {
+    e.preventDefault();
+    const fname    = document.getElementById('reg-fname').value.trim();
+    const lname    = document.getElementById('reg-lname').value.trim();
+    const email    = document.getElementById('reg-email').value.trim();
+    const phone    = document.getElementById('reg-phone').value.trim();
+    const course   = document.getElementById('reg-course').value;
+    const password = document.getElementById('reg-password').value;
+    const confirm  = document.getElementById('reg-confirm').value;
+    const terms    = document.getElementById('reg-terms').checked;
+
+    let hasError = false;
+    if (markError('reg-fname', 'reg-fname-err', fname.length < 1)) hasError = true;
+    if (markError('reg-lname', 'reg-lname-err', lname.length < 1)) hasError = true;
+    if (markError('reg-email', 'reg-email-err', !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) hasError = true;
+    if (markError('reg-phone', 'reg-phone-err', phone.length < 7)) hasError = true;
+    if (markError('reg-course', 'reg-course-err', course === '')) hasError = true;
+    if (markError('reg-password', 'reg-pass-err', password.length < 8)) hasError = true;
+    if (markError('reg-confirm', 'reg-confirm-err', password !== confirm)) hasError = true;
+
+    showError('reg-terms-err', !terms);
+    if (!terms) hasError = true;
+
+    if (hasError) return;
+
+    setLoading('register-btn', true);
+
+    setTimeout(() => {
+      setLoading('register-btn', false);
+      const fullName = fname + ' ' + lname;
+      document.getElementById('nav-user-name').textContent = fullName;
+      document.getElementById('dash-welcome').textContent = 'WELCOME, ' + fname.toUpperCase() + '!';
+      navigate('dashboard');
+      showToast('Account created! Welcome to Lessgooo, ' + fname + '!', 'success');
+    }, 2000);
+  }
+
+  // ─── LOGOUT ──────────────────────────────────────────────────
+  function handleLogout() {
+    document.getElementById('login-email').value = '';
+    document.getElementById('login-password').value = '';
+    navigate('home');
+    showToast('You have been signed out.', 'success');
+  }
+
+  // ─── Clear errors on input ────────────────────────────────────
+  document.querySelectorAll('.form-input, .form-select').forEach(el => {
+    el.addEventListener('input', () => {
+      el.classList.remove('error');
+      const errEl = document.getElementById(el.id + '-err');
+      if (errEl) errEl.classList.remove('show');
+    });
+  });
+</script>
+</body>
+</html>
